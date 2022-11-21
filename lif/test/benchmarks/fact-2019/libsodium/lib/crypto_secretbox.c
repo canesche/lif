@@ -2,7 +2,7 @@
  * Port from FaCT implementation:
  * https://github.com/PLSysSec/fact-eval/blob/master/openssl-ssl3/s3_cbc.fact
  */
-
+ 
 #include "../include/crypto_secretbox.h"
 #include "../../../include/taint.h"
 
@@ -11,6 +11,48 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
+
+uint64_t load_limb(uint8_t *input) {
+    return
+        ((uint64_t)  input[0])        |
+        (((uint64_t) input[1]) << 8)  |
+        (((uint64_t) input[2]) << 16) |
+        (((uint64_t) input[3]) << 24) |
+        (((uint64_t) input[4]) << 32) |
+        (((uint64_t) input[5]) << 40) |
+        (((uint64_t) input[6]) << 48) |
+        (((uint64_t) input[7]) << 56);
+}
+
+uint64_t view(uint8_t data, uint8_t data_out, uint8_t size) {
+  uint8_t view[8];
+  memcpy(view, data, 8);
+  return load_limb(view);
+}
+
+uint16_t load_be(uint8ptr_wrapped_ty* buf) {
+  uint16_t x2 = (buf->buf[0]) << 8 ;
+  uint16_t x1 = (buf->buf[1]);
+  return x1 | x2;
+}
+
+uint16_t load_le(uint8ptr_wrapped_ty* buf) {
+  uint16_t x2 = (buf->buf[0]);
+  uint16_t x1 = (buf->buf[1]) << 8;
+  return x1 | x2;
+}
+
+void store_le(uint8ptr_wrapped_ty* buf, uint16_t n) {
+  buf->len = 2;
+  buf->buf[0] = (n >> 8);
+  buf->buf[1] = (n);
+}
+
+void smemzero(uint8ptr_wrapped_ty* buf) {
+  for (int i = 0; i < buf->len; ++i) {
+    buf->buf[i] = 0;
+  }
+}
 
 // NOTE: the original function has an additional parameter
 // `const unsigned char *c`, but the secretbox code passes
