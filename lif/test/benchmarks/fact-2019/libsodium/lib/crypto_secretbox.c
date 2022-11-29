@@ -30,6 +30,26 @@ uint64_t view(uint8_t data, uint8_t data_out, uint8_t size) {
   return load_limb(view);
 }
 
+// TODO
+int32_t __crypto_stream_salsa20(uint8ptr_wrapped_ty* c, uint64_t size, uint8ptr_wrapped_ty* subkey) {
+  return 0;
+}
+
+// TODO
+int32_t __crypto_stream_salsa20_xor_ic(uint8ptr_wrapped_ty* c, uint8ptr_wrapped_ty* m, uint8ptr_wrapped_ty* tmp, uint64_t ic, uint8ptr_wrapped_ty* subkey) {
+  return 0;
+}
+
+// TODO
+void __crypto_onetimeauth_poly1305(uint8ptr_wrapped_ty* cview, uint8ptr_wrapped_ty* mview, uint8ptr_wrapped_ty* kview) {
+  return;
+}
+
+// TODO
+int32_t __crypto_onetimeauth_poly1305_verify(uint8ptr_wrapped_ty* tmp1, uint8ptr_wrapped_ty* cview, uint8ptr_wrapped_ty* subkey) {
+  return 0;
+}
+
 uint16_t load_be(uint8ptr_wrapped_ty* buf) {
   uint16_t x2 = (buf->buf[0]) << 8 ;
   uint16_t x1 = (buf->buf[1]);
@@ -57,7 +77,7 @@ void smemzero(uint8ptr_wrapped_ty* buf) {
 // NOTE: the original function has an additional parameter
 // `const unsigned char *c`, but the secretbox code passes
 // NULL in for this parameter so I'm just not using it
-void _crypto_core_hsalsa20(
+void __crypto_core_hsalsa20(
     uint8ptr_wrapped_ty* out,
     uint8ptr_wrapped_ty* input,
     uint8ptr_wrapped_ty* k) {
@@ -125,41 +145,41 @@ void _crypto_core_hsalsa20(
     store_le(view(out, 28, 4), x9);
 }
 
-int32_t _crypto_stream_xsalsa20(
+int32_t __crypto_stream_xsalsa20(
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* n,
     uint8ptr_wrapped_ty* k) {
 
   uint8_t subkey[32] = {0};
-  _crypto_core_hsalsa20(subkey, view(n, 0, 16), k);
-  int32_t ret = _crypto_stream_salsa20(c, view(n, 16, 8), subkey);
+  __crypto_core_hsalsa20(subkey, view(n, 0, 16), k);
+  int32_t ret = __crypto_stream_salsa20(c, view(n, 16, 8), subkey);
   smemzero(subkey);
   return ret;
 }
 
-int32_t _crypto_stream_xsalsa20_xor_ic(
+int32_t __crypto_stream_xsalsa20_xor_ic(
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* m,
     uint8ptr_wrapped_ty* n,
     uint64_t ic,
     uint8ptr_wrapped_ty* k) {
   uint8_t subkey[32] = {0};
-  _crypto_core_hsalsa20(subkey, view(n, 0, 16), k);
+  __crypto_core_hsalsa20(subkey, view(n, 0, 16), k);
   uint8ptr_wrapped_ty* tmp = view(n, 16, 8);
-  int32_t ret = _crypto_stream_salsa20_xor_ic(c, m, tmp, ic, subkey);
+  int32_t ret = __crypto_stream_salsa20_xor_ic(c, m, tmp, ic, subkey);
   smemzero(subkey);
   return ret;
 }
 
-int32_t _crypto_stream_xsalsa20_xor(
+int32_t __crypto_stream_xsalsa20_xor(
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* m,
     uint8ptr_wrapped_ty* n,
     uint8ptr_wrapped_ty* k) {
-  return _crypto_stream_xsalsa20_xor_ic(c, m, n, 0, k);
+  return __crypto_stream_xsalsa20_xor_ic(c, m, n, 0, k);
 }
 
-int32_t _crypto_secretbox_xsalsa20poly1305(
+int32_t __crypto_secretbox_xsalsa20poly1305(
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* m,
     uint8ptr_wrapped_ty* n,
@@ -169,11 +189,11 @@ int32_t _crypto_secretbox_xsalsa20poly1305(
   }
   //assume(len c == len m);
 
-  _crypto_stream_xsalsa20_xor(c, m, n, k);
+  __crypto_stream_xsalsa20_xor(c, m, n, k);
   uint8ptr_wrapped_ty* cview = view(c, 16, 16);
   uint8ptr_wrapped_ty* mview = view(c, 32, c->len - 32); // yes this is c and not m
   uint8ptr_wrapped_ty* kview = view(c, 0, 32); // yes this is c and not k
-  _crypto_onetimeauth_poly1305(cview, mview, kview);
+  __crypto_onetimeauth_poly1305(cview, mview, kview);
 
   for (uint64_t i = 0; i < 16; ++i) {
     c->buf[i] = 0;
@@ -181,7 +201,7 @@ int32_t _crypto_secretbox_xsalsa20poly1305(
   return true;
 }
 
-int32_t _crypto_secretbox_xsalsa20poly1305_open(
+int32_t __crypto_secretbox_xsalsa20poly1305_open(
     uint8ptr_wrapped_ty* m,
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* n,
@@ -192,13 +212,13 @@ int32_t _crypto_secretbox_xsalsa20poly1305_open(
   //assume(len c == len m);
 
   uint8_t subkey[32] = {0};
-  _crypto_stream_xsalsa20(subkey, n, k);
+  __crypto_stream_xsalsa20(subkey, n, k);
   uint8ptr_wrapped_ty* tmp1 = view(c, 16, 16);
   uint8ptr_wrapped_ty* cview = view(c, 32, c->len - 32);
-  if (!_crypto_onetimeauth_poly1305_verify(tmp1, cview, subkey)) {
+  if (!__crypto_onetimeauth_poly1305_verify(tmp1, cview, subkey)) {
     return false;
   }
-  _crypto_stream_xsalsa20_xor(m, c, n, k);
+  __crypto_stream_xsalsa20_xor(m, c, n, k);
   for (uint32_t i = 0; i < 32; ++i) {
     m->buf[i] = 0;
   }
@@ -206,18 +226,18 @@ int32_t _crypto_secretbox_xsalsa20poly1305_open(
   return true;
 }
 
-int32_t _crypto_secretbox(
+int32_t __crypto_secretbox(
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* m,
     uint8ptr_wrapped_ty* n,
     uint8ptr_wrapped_ty* k) {
-  return _crypto_secretbox_xsalsa20poly1305(c, m, n, k);
+  return __crypto_secretbox_xsalsa20poly1305(c, m, n, k);
 }
 
-int32_t _crypto_secretbox_open(
+int32_t __crypto_secretbox_open(
     uint8ptr_wrapped_ty* m,
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* n,
     uint8ptr_wrapped_ty* k) {
-  return _crypto_secretbox_xsalsa20poly1305_open(m, c, n, k);
+  return __crypto_secretbox_xsalsa20poly1305_open(m, c, n, k);
 }

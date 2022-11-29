@@ -34,8 +34,7 @@ int main() {
 #endif
 
     //decrypted, ciphertext, nonce, key
-
-    _crypto_secretbox(data, ciphertext, nonce, key);
+    __crypto_secretbox(data, ciphertext, nonce, key);
 
 #ifdef ENABLE_MEASURE_TIME
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);

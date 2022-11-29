@@ -8,48 +8,70 @@ typedef struct uint8ptr_wrapped_ty {
     uint64_t len;
 } uint8ptr_wrapped_ty;
 
-void _crypto_core_hsalsa20(
+int32_t __crypto_stream_salsa20(
+    uint8ptr_wrapped_ty* c, 
+    uint64_t size, 
+    uint8ptr_wrapped_ty* subkey);
+
+int32_t __crypto_stream_salsa20_xor_ic(
+    uint8ptr_wrapped_ty* c, 
+    uint8ptr_wrapped_ty* m, 
+    uint8ptr_wrapped_ty* tmp, 
+    uint64_t ic, 
+    uint8ptr_wrapped_ty* subkey);
+
+void __crypto_onetimeauth_poly1305(
+    uint8ptr_wrapped_ty* cview, 
+    uint8ptr_wrapped_ty* mview, 
+    uint8ptr_wrapped_ty* kview);
+
+int32_t __crypto_onetimeauth_poly1305_verify(
+    uint8ptr_wrapped_ty* tmp1, 
+    uint8ptr_wrapped_ty* cview, 
+    uint8ptr_wrapped_ty* subkey);
+
+void __crypto_core_hsalsa20(
     uint8ptr_wrapped_ty* out,
     uint8ptr_wrapped_ty* input,
     uint8ptr_wrapped_ty* k);
 
-int32_t _crypto_stream_xsalsa20(
+int32_t __crypto_stream_xsalsa20(
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* n,
     uint8ptr_wrapped_ty* k);
 
-int32_t _crypto_stream_xsalsa20_xor_ic(
+int32_t __crypto_stream_xsalsa20_xor_ic(
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* m,
     uint8ptr_wrapped_ty* n,
     uint64_t ic,
     uint8ptr_wrapped_ty* k);
 
-int32_t _crypto_stream_xsalsa20_xor(
+int32_t __crypto_stream_xsalsa20_xor(
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* m,
     uint8ptr_wrapped_ty* n,
     uint8ptr_wrapped_ty* k);
 
-int32_t _crypto_secretbox_xsalsa20poly1305(
+int32_t __crypto_secretbox_xsalsa20poly1305(
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* m,
     uint8ptr_wrapped_ty* n,
     uint8ptr_wrapped_ty* k);
 
-int32_t _crypto_secretbox_xsalsa20poly1305_open(
+int32_t __crypto_secretbox_xsalsa20poly1305_open(
     uint8ptr_wrapped_ty* m,
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* n,
     uint8ptr_wrapped_ty* k);
 
-int32_t _crypto_secretbox(
+int32_t __crypto_secretbox(
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* m,
     uint8ptr_wrapped_ty* n,
     uint8ptr_wrapped_ty* k);
 
-int32_t _crypto_secretbox_open(
+int32_t __crypto_secretbox_open(
     uint8ptr_wrapped_ty* m,
     uint8ptr_wrapped_ty* c,
     uint8ptr_wrapped_ty* n,
