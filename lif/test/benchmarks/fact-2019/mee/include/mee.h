@@ -51,7 +51,7 @@ int32_t _aesni_cbc_hmac_sha1_cipher(
     uint8ptr_wrapped_ty* _in,
     uint16_t tls_ver);
 
-extern void aesni_cbc_encrypt(
+void aesni_cbc_encrypt(
     uint8ptr_wrapped_ty* input,
     uint8ptr_wrapped_ty* out,
     uint64_t length,

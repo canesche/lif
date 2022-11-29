@@ -16,7 +16,13 @@
 
 #include <openssl/sha.h>
 
-extern void sha1_block_data_order(SHA_CTX ctx, uint8ptr_wrapped_ty* p, uint32_t num);
+# define l2n(l,c) (*((c)++)=(unsigned char)(((l)>>24)&0xff), \
+                   *((c)++)=(unsigned char)(((l)>>16)&0xff), \
+                   *((c)++)=(unsigned char)(((l)>> 8)&0xff), \
+                   *((c)++)=(unsigned char)(((l)    )&0xff))
+
+
+//extern void sha1_block_data_order(SHA_CTX ctx, uint8ptr_wrapped_ty* p, uint32_t num);
 
 uint64_t load_limb(uint8_t *input) {
     return
@@ -133,12 +139,7 @@ int32_t _aesni_cbc_hmac_sha1_cipher(
   memcpy(view_out, _out->buf, 8);
 
   /* decrypt HMAC|padding at once */
-  aesni_cbc_encrypt(
-      load_limb(view_in),
-      load_limb(view_out),
-      _len,
-      key.ks.rd_key.buf,
-      iv, 0);
+  //aesni_cbc_encrypt(load_limb(view_in), load_limb(view_out), _len, key.ks.rd_key.buf, iv, 0);
 
   /* figure out payload length */
   uint32_t pad = _out->buf[_out->len - 1];
