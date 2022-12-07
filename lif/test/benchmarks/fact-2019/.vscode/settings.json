@@ -1,5 +1,15 @@
 {
     "files.associations": {
-        "random": "c"
+        "random": "c",
+        "bit": "c",
+        "queue": "c",
+        "aes.h": "c",
+        "opensslconf.h": "c",
+        "macros.h": "c",
+        "configuration.h": "c",
+        "sha.h": "c",
+        "rand.h": "c",
+        "objects.h": "c",
+        "evp.h": "c"
     }
 }

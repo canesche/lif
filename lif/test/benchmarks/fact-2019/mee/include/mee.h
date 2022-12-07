@@ -35,6 +35,18 @@ typedef struct SHA_CTX_TYPE {
     uint32_t num;
 } SHA_CTX_TYPE;
 
+/*
+typedef struct {
+    AES_KEY ks;
+    SHA_CTX head, tail, md;
+    size_t payload_length;      
+    union {
+        unsigned int tls_ver;
+        unsigned char tls_aad[16]; 
+    } aux;
+} EVP_AES_HMAC_SHA1;
+*/
+
 typedef struct EVP_AES_HMAC_SHA1 {
     AES_KEY ks;
     SHA_CTX_TYPE head;
@@ -46,7 +58,7 @@ typedef struct EVP_AES_HMAC_SHA1 {
 
 int32_t _aesni_cbc_hmac_sha1_cipher(
     uint8ptr_wrapped_ty* iv,
-    EVP_AES_HMAC_SHA1 key,
+    EVP_AES_HMAC_SHA1 *key,
     uint8ptr_wrapped_ty* _out,
     uint8ptr_wrapped_ty* _in,
     uint16_t tls_ver);
@@ -57,6 +69,6 @@ void aesni_cbc_encrypt(
     uint64_t length,
     uint32ptr_wrapped_ty* key, // actually struct AES_KEY
     uint8ptr_wrapped_ty* iv,
-    int32_t enc); // really a bool
+    int32_t enc);
 
 #endif

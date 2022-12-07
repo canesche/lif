@@ -12,6 +12,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include <sodium.h>
+#include <sodium/crypto_stream_salsa20.h>
+
 uint64_t load_limb(uint8_t *input) {
     return
         ((uint64_t)  input[0])        |
@@ -30,24 +33,20 @@ uint64_t view(uint8_t data, uint8_t data_out, uint8_t size) {
   return load_limb(view);
 }
 
-// TODO
 int32_t __crypto_stream_salsa20(uint8ptr_wrapped_ty* c, uint64_t size, uint8ptr_wrapped_ty* subkey) {
-  return 0;
+  return crypto_stream_salsa20(c, size, subkey, NULL);
 }
 
-// TODO
 int32_t __crypto_stream_salsa20_xor_ic(uint8ptr_wrapped_ty* c, uint8ptr_wrapped_ty* m, uint8ptr_wrapped_ty* tmp, uint64_t ic, uint8ptr_wrapped_ty* subkey) {
-  return 0;
+  return crypto_stream_salsa20_xor_ic(c, m, m->len, tmp, ic, subkey);
 }
 
-// TODO
 void __crypto_onetimeauth_poly1305(uint8ptr_wrapped_ty* cview, uint8ptr_wrapped_ty* mview, uint8ptr_wrapped_ty* kview) {
-  return;
+  crypto_onetimeauth_poly1305(cview, mview, mview->len, kview);
 }
 
-// TODO
 int32_t __crypto_onetimeauth_poly1305_verify(uint8ptr_wrapped_ty* tmp1, uint8ptr_wrapped_ty* cview, uint8ptr_wrapped_ty* subkey) {
-  return 0;
+  return crypto_onetimeauth_poly1305_verify(tmp1, cview, cview->len, subkey);
 }
 
 uint16_t load_be(uint8ptr_wrapped_ty* buf) {
